@@ -17,10 +17,10 @@ router.get('/:collectionId', async (req, res) => {
     const limit = 500; // specify pagination limit
     const start = parseInt(req.query.start); // get start request
     
-    const comments = await req.CommentModel.find().skip(start).limit(limit);
+    const comments = await req.CommentModel.find().sort('_id').skip(start).limit(limit);
     res.json(comments);
   } else {
-    const comments = await req.CommentModel.find();
+    const comments = await req.CommentModel.find().sort('_id');
     res.json(comments);
   }
 });

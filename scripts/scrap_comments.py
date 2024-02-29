@@ -114,49 +114,50 @@ uninserted_links = [link for link in links if not metadata.find_one({"link": lin
 print(uninserted_links)
 random_links = random.sample(uninserted_links, min(20, len(uninserted_links)))
 
-# Loop over random links to scrape and store data
-for link in random_links:
-    if metadata.find_one({"link": link}):
-        print(f"Skipping link {link} as it's already processed.")
-        continue
-
-    comments_to_insert = []
-    link_parts = link.split('/')
-    subcollection_id = link_parts[-2]
-    start_value = int(link.split('=')[-1])
-    subcollection = db['comments'][subcollection_id]
-    comments_data = scrape_comment(link)
-
-    for i, html in enumerate(comments_data):
-        comment_index = str(start_value + i)
-        data = extract_data(html)
-        comments_to_insert.append({"_id": comment_index, "data": data})
-
-    if metadata.find_one({"link": link}):
-        print(f"Skipping link {link} as it's already processed.")
-        continue
-        
-    if comments_to_insert:
-        subcollection.insert_many(comments_to_insert)
-        if not metadata.find_one({"link": link}):
-            metadata.insert_one({"link": link})
-            print(link)
-
-
-
-# random_links = ["https://www.douban.com/group/topic/301312499/?start=2300", "https://www.douban.com/group/topic/301192681/?start=700"]
-
-# # Loop over the specified links to scrape and store/update data
+# # Loop over random links to scrape and store data
 # for link in random_links:
-#     subcollection_id = link.split('/topic/')[1].split('/')[0]
+#     if metadata.find_one({"link": link}):
+#         print(f"Skipping link {link} as it's already processed.")
+#         continue
+
+#     comments_to_insert = []
+#     link_parts = link.split('/')
+#     subcollection_id = link_parts[-2]
+#     start_value = int(link.split('=')[-1])
 #     subcollection = db['comments'][subcollection_id]
 #     comments_data = scrape_comment(link)
-#     comments_to_insert = []
-#     start_value = int(link.split('=')[-1])
+
 #     for i, html in enumerate(comments_data):
 #         comment_index = str(start_value + i)
 #         data = extract_data(html)
 #         comments_to_insert.append({"_id": comment_index, "data": data})
-#     for comment in comments_to_insert:
-#         subcollection.update_one({"_id": comment['_id']}, {"$set": comment}, upsert=True)
-#     print(f"Processed link: {link}")
+
+#     if metadata.find_one({"link": link}):
+#         print(f"Skipping link {link} as it's already processed.")
+#         continue
+        
+#     if comments_to_insert:
+#         subcollection.insert_many(comments_to_insert)
+#         if not metadata.find_one({"link": link}):
+#             metadata.insert_one({"link": link})
+#             print(link)
+
+
+
+random_links = ["https://www.douban.com/group/topic/301312499/?start=2300", "https://www.douban.com/group/topic/301192681/?start=700"]
+
+# Loop over the specified links to scrape and store/update data
+for link in random_links:
+    subcollection_id = link.split('/topic/')[1].split('/')[0]
+    subcollection = db['comments'][subcollection_id]
+    comments_data = scrape_comment(link)
+    comments_to_insert = []
+    start_value = int(link.split('=')[-1])
+    for i, html in enumerate(comments_data):
+        comment_index = str(start_value + i)
+        data = extract_data(html)
+        comments_to_insert.append({"_id": comment_index, "data": data})
+    for comment in comments_to_insert:
+        subcollection.update_one({"_id": comment['_id']}, {"$set": comment}, upsert=True)
+        print(comment['_id'],comment)
+    print(f"Processed link: {link}")

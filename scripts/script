@@ -20,60 +20,14 @@ print("Total number of comments: " + total);
 
 
 
-var urlPattern = /view\/group_topic\/l\/public\/(p\d+)/g;
 
-db.getCollectionNames().forEach(function (collection) {
-    var cursor = db[collection].find();
-    while (cursor.hasNext()) {
-        var doc = cursor.next();
 
-        for (var field in doc) {
-            var value = doc[field];
-            if (typeof value === 'string' || value instanceof String) {
-                var match = value.match(urlPattern);
-                if (match) {
-                    match.forEach(function (url) {
-                        var id = url.split('/')[4];
-                        if (id) {
-                            id = id.split('.')[0];  // remove the extension
-                            
-                            // Connect to a new database (it will be created if doesn't already exist)
-                            var newDb = connect("mongodb://localhost:27017/media");
-                            
-                            // Insert the identifier into the "identifiers" collection
-                            newDb.identifiers.insert({id: id});
-                        }
-                    });
-                }
-            }
-        }
+
+
+mongodump --out=./
+mongorestore --dir=./
+db.adminCommand('listDatabases').databases.forEach(function(database) {
+    if (!['admin', 'config', 'local'].includes(database.name)) {
+        db.getSiblingDB(database.name).dropDatabase();
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-db.identifiers.aggregate([
-  { $group: {
-    _id: "$id", // Group by the 'id'
-    ids: { $push: "$_id" } // Collect all document ids in an array
-  }},
-  { $match: {
-    "ids.1": { $exists: true } // Match groups with more than one document
-  }}
-]).forEach(function(doc) {
-  // Keep the first id and remove the others
-  doc.ids.shift(); // This removes the first element and keeps it, assuming it's the one you want to keep
-  db.identifiers.deleteMany({ _id: { $in: doc.ids } }); // Delete all but the first document
-});
-

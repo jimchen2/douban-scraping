@@ -31,7 +31,7 @@ def download_file(media):
 client = MongoClient('mongodb://localhost:27017/')
 
 # Access the 'comment_media' database
-media_db = client['topic_media']
+media_db = client['comment_media']
 # Access the collection within 'comment_media' database that stores URLs
 media_collection = media_db['media_url']
 

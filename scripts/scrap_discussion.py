@@ -105,20 +105,16 @@ documents_to_insert = {}
 
 # Check each document to see if it already exists in the collection
 for document in discussion_metadata:
-    # Check if a document with the same 'Link' exists in the MongoDB collection 
-    # and within the list of documents to insert
-    if not collection.find_one({'Link': document['Link']}) \
-            and document['Link'] not in documents_to_insert:
-
-        # If it doesn't exist, add to the dictionary of documents to insert
-        documents_to_insert[document['Link']] = document
-
-# Insert the new documents into the collection, if any
-if documents_to_insert:
-    # Get the documents from the dictionary and convert to a list
-    documents_list = list(documents_to_insert.values())
-    result = collection.insert_many(documents_list)
-    print('Inserted IDs:', result.inserted_ids)
-else:
-    print('No new documents to insert.')
-
+    result = collection.update_one(
+        {'Link': document['Link']},  # Query condition for matching documents
+        {'$set': document},          # Update or insert the document
+        upsert=True                  # Insert a new document if none match the query condition
+    )
+    
+    # Check the result and print appropriate messages
+    if result.matched_count > 0:
+        print(f"Updated document with Link: {document['Link']}")
+    elif result.upserted_id:
+        print(f"Inserted new document with ID: {result.upserted_id}")
+    else:
+        print(f"No changes made for Link: {document['Link']}")

@@ -15,17 +15,10 @@ print("Total number of comments: " + total);
 
 
 
-
-
-
-
-
-
-
-
-
 mongodump --out=./
 mongorestore --dir=./
+
+use admin
 db.adminCommand('listDatabases').databases.forEach(function(database) {
     if (!['admin', 'config', 'local'].includes(database.name)) {
         db.getSiblingDB(database.name).dropDatabase();

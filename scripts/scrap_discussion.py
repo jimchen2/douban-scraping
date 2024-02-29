@@ -85,6 +85,7 @@ for start in range(0, 175, 25):
     page_discussions = parse_discussions(html_content)
     
     discussion_metadata.extend(page_discussions)
+    print(page_discussions)
     print(len(page_discussions))
 
 print(discussion_metadata)

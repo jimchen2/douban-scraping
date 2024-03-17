@@ -78,7 +78,7 @@ discussion_metadata = []
 
 # Loop through the specified page offsets
 for start in range(0, 175, 25):
-    url = f"https://www.douban.com/group/716903/discussion?start={start}"
+    # url = f"https://www.douban.com/group/[]/discussion?start={start}"
     
     html_content = scrape_discussion_list_html(url)
     

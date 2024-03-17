@@ -144,7 +144,6 @@ random_links = random.sample(uninserted_links, min(20, len(uninserted_links)))
 
 
 
-random_links = ["https://www.douban.com/group/topic/301312499/?start=2300", "https://www.douban.com/group/topic/301192681/?start=700"]
 
 # Loop over the specified links to scrape and store/update data
 for link in random_links:

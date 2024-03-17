@@ -59,7 +59,7 @@ const SearchBar = () => {
           <span
             style={{ fontSize: "25px", color: "black", fontWeight: "bold" }}
           >
-            椰子种植基地
+            豆瓣小组名
           </span>
         </Link>
         <FormControl
